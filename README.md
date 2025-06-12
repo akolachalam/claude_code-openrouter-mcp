@@ -1,75 +1,111 @@
-# Claude Code + Gemini MCP Server
+# Claude Code + OpenRouter MCP Server
 
-Connect Claude Code with Google's Gemini AI for powerful AI collaboration. Ask Gemini questions, get code reviews, and brainstorm ideas - all within Claude Code!
+Connect Claude Code with any AI model through OpenRouter! Use GPT-4, Claude, Gemini, Llama, and more - all within Claude Code!
 
 ## 🚀 Quick Start (2 minutes)
 
 ### Prerequisites
 - Python 3.8+ installed
 - Claude Code CLI installed
-- Google Gemini API key ([Get one free](https://aistudio.google.com/apikey))
+- OpenRouter API key ([Get one here](https://openrouter.ai/keys))
 
-### One-Line Install
-
-```bash
-curl -sSL https://raw.githubusercontent.com/RaiAnsar/claude_code-gemini-mcp/main/install.sh | bash
-```
-
-### Manual Install
+### Setup
 
 1. **Clone this repo:**
 ```bash
-git clone https://github.com/RaiAnsar/claude_code-gemini-mcp.git
-cd claude_code-gemini-mcp
+git clone https://github.com/your-username/claude_code-openrouter-mcp.git
+cd claude_code-openrouter-mcp
 ```
 
-2. **Run setup with your API key:**
+2. **Install dependencies:**
 ```bash
-./setup.sh YOUR_GEMINI_API_KEY
+pip install -r requirements.txt
+```
+
+3. **Set your OpenRouter API key:**
+```bash
+export OPENROUTER_API_KEY="your_api_key_here"
+# Optional: Set default model
+export OPENROUTER_MODEL="google/gemini-2.0-flash"
+```
+
+4. **Add to Claude Code:**
+```bash
+claude mcp add openrouter python3 /path/to/claude_code-openrouter-mcp/server.py
 ```
 
 That's it! 🎉
 
-## 📖 Usage
+## 📖 Usage Examples
 
-Start Claude Code anywhere and use these commands:
+Start Claude Code and use these tools:
 
 ```bash
 claude
 
-# Ask Gemini anything
-
-mcp__gemini-collab__ask_gemini
-  prompt: "Explain quantum computing in simple terms"
+# Ask any AI model
+mcp__openrouter__ask_ai
+  prompt: "Explain quantum computing"
+  model: "openai/gpt-4-turbo"
 
 # Get code reviews
-mcp__gemini-collab__gemini_code_review
+mcp__openrouter__ai_code_review
   code: "def auth(u): return u.pwd == 'admin'"
   focus: "security"
+  model: "anthropic/claude-3-opus"
 
-# Brainstorm ideas
-mcp__gemini-collab__gemini_brainstorm
-  topic: "How to scale a web app to 1M users"
+# Brainstorm with different models
+mcp__openrouter__ai_brainstorm
+  topic: "How to scale a web app"
+  model: "meta-llama/llama-3-70b-instruct"
 
-Or simply ask claude code to correlate with Gemini, it is not a rocket sciene... (Author's note) 
+# List available models
+mcp__openrouter__list_models
 ```
 
-## 🛠️ What This Does
+## 🤖 Available Models
 
-1. Installs the Google Gemini Python SDK
-2. Sets up an MCP server that bridges Claude Code and Gemini
-3. Configures it globally (works in any directory)
-4. Provides tools for collaboration between Claude and Gemini
+- **Google**: gemini-2.0-flash, gemini-pro
+- **Anthropic**: claude-3-opus, claude-3-sonnet, claude-3-haiku
+- **OpenAI**: gpt-4-turbo, gpt-4, gpt-3.5-turbo
+- **Meta**: llama-3-70b-instruct
+- **Mistral**: mixtral-8x7b-instruct
+- And many more on [OpenRouter](https://openrouter.ai/models)
 
-## 🔧 Available Tools
+## 🛠️ Available Tools
 
-- **ask_gemini** - Ask Gemini any question
-- **gemini_code_review** - Get security/performance code reviews
-- **gemini_brainstorm** - Brainstorm ideas and solutions
+- **ask_ai** - Ask any AI model a question
+- **ai_code_review** - Get code reviews from any model
+- **ai_brainstorm** - Brainstorm ideas with any model
+- **list_models** - See all available models
+- **server_info** - Check server status
 
-## 📁 Installation Location
+## 🔧 Configuration
 
-The server is installed at: `~/.claude-mcp-servers/gemini-collab/`
+### Environment Variables
+- `OPENROUTER_API_KEY` - Your OpenRouter API key (required)
+- `OPENROUTER_MODEL` - Default model to use (optional, defaults to gemini-2.0-flash)
+
+### Using .env file
+Copy `.env.example` to `.env` and add your API key:
+```bash
+cp .env.example .env
+# Edit .env with your API key
+```
+
+## 🧪 Testing
+
+Test the server directly:
+```bash
+# Check if it works
+python3 server.py < test_request.json
+```
+
+Or test in Claude Code:
+```bash
+claude
+# Then type: mcp__openrouter__server_info
+```
 
 ## 🐛 Troubleshooting
 
@@ -78,22 +114,22 @@ The server is installed at: `~/.claude-mcp-servers/gemini-collab/`
 # Check if it's installed
 claude mcp list
 
-# Reinstall with global scope
-claude mcp remove gemini-collab
-claude mcp add --scope user gemini-collab python3 ~/.claude-mcp-servers/gemini-collab/server.py
+# Remove and re-add
+claude mcp remove openrouter
+claude mcp add openrouter python3 /full/path/to/server.py
 ```
 
+**API key errors?**
+- Ensure `OPENROUTER_API_KEY` is set in your environment
+- Check your API key is valid at [OpenRouter](https://openrouter.ai/keys)
+
 **Connection errors?**
-- Check your API key is valid
-- Ensure Python has `google-generativeai` installed: `pip install google-generativeai`
-
-## 🔑 Update API Key
-
-Edit `~/.claude-mcp-servers/gemini-collab/server.py` and replace the API key.
+- Ensure `requests` is installed: `pip install requests`
+- Check your internet connection
 
 ## 🤝 Contributing
 
-Pull requests welcome! Please keep it simple and beginner-friendly.
+Pull requests welcome! Feel free to add more models or features.
 
 ## 📜 License
 
