@@ -32,7 +32,7 @@ OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY", "YOUR_API_KEY_HERE")
 OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1/chat/completions"
 
 # Default model - can be overridden
-DEFAULT_MODEL = os.environ.get("OPENROUTER_MODEL", "google/gemini-pro")
+DEFAULT_MODEL = os.environ.get("OPENROUTER_MODEL", "google/gemini-2.5-pro-preview")
 
 # Available models (you can extend this list based on OpenRouter's offerings)
 AVAILABLE_MODELS = [
@@ -95,6 +95,9 @@ AVAILABLE_MODELS = [
 # Check if API key is configured
 API_CONFIGURED = OPENROUTER_API_KEY != "YOUR_API_KEY_HERE"
 
+# Dynamic models list (will be populated on startup)
+DYNAMIC_MODELS = []
+
 def send_response(response: Dict[str, Any]):
     """Send a JSON-RPC response"""
     print(json.dumps(response), flush=True)
@@ -135,7 +138,7 @@ def handle_tools_list(request_id: Any) -> Dict[str, Any]:
                         "model": {
                             "type": "string",
                             "description": f"Model to use (default: {DEFAULT_MODEL})",
-                            "enum": AVAILABLE_MODELS,
+                            "enum": DYNAMIC_MODELS if DYNAMIC_MODELS else AVAILABLE_MODELS,
                             "default": DEFAULT_MODEL
                         },
                         "temperature": {
@@ -231,6 +234,28 @@ def handle_tools_list(request_id: Any) -> Dict[str, Any]:
         }
     }
 
+def fetch_available_models() -> List[str]:
+    """Fetch available models from OpenRouter API"""
+    try:
+        response = requests.get("https://openrouter.ai/api/v1/models")
+        response.raise_for_status()
+        
+        data = response.json()
+        models = []
+        
+        # Extract model IDs from the response
+        if "data" in data:
+            for model in data["data"]:
+                if "id" in model:
+                    models.append(model["id"])
+        
+        return models if models else AVAILABLE_MODELS
+    except Exception as e:
+        # Fall back to hardcoded list if API call fails
+        sys.stderr.write(f"Failed to fetch models from OpenRouter API: {str(e)}\n")
+        sys.stderr.flush()
+        return AVAILABLE_MODELS
+
 def call_openrouter(messages: List[Dict[str, str]], model: str = DEFAULT_MODEL, 
                    temperature: float = 0.5, max_tokens: int = 4096) -> str:
     """Call OpenRouter API and return response"""
@@ -276,8 +301,11 @@ def handle_tool_call(request_id: Any, params: Dict[str, Any]) -> Dict[str, Any]:
                 result = f"Server v{__version__} - Please set OPENROUTER_API_KEY environment variable"
         
         elif tool_name == "list_models":
-            result = "Available models:\n" + "\n".join(f"- {model}" for model in AVAILABLE_MODELS)
+            models_to_show = DYNAMIC_MODELS if DYNAMIC_MODELS else AVAILABLE_MODELS
+            result = "Available models:\n" + "\n".join(f"- {model}" for model in models_to_show)
             result += f"\n\nCurrent default: {DEFAULT_MODEL}"
+            if DYNAMIC_MODELS:
+                result += f"\n\nTotal models: {len(DYNAMIC_MODELS)}"
         
         elif tool_name == "ask_ai":
             if not API_CONFIGURED:
@@ -361,10 +389,19 @@ Provide specific, actionable feedback on:
 
 def main():
     """Main server loop"""
+    global DYNAMIC_MODELS
+    
     # Check configuration on startup
     if not API_CONFIGURED:
         sys.stderr.write("Warning: OPENROUTER_API_KEY not configured. Limited functionality available.\n")
         sys.stderr.write("Please set OPENROUTER_API_KEY environment variable to enable AI features.\n")
+        sys.stderr.flush()
+    else:
+        # Fetch available models on startup
+        sys.stderr.write("Fetching available models from OpenRouter...\n")
+        sys.stderr.flush()
+        DYNAMIC_MODELS = fetch_available_models()
+        sys.stderr.write(f"Loaded {len(DYNAMIC_MODELS)} models from OpenRouter API\n")
         sys.stderr.flush()
     
     while True:
