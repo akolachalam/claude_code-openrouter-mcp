@@ -9,6 +9,16 @@ import sys
 import os
 import requests
 from typing import Dict, Any, Optional, List
+from pathlib import Path
+
+# Try to load .env file if it exists
+try:
+    from dotenv import load_dotenv
+    env_path = Path(__file__).parent / '.env'
+    if env_path.exists():
+        load_dotenv(env_path)
+except ImportError:
+    pass  # dotenv not installed, skip loading
 
 # Ensure unbuffered output
 sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 1)
