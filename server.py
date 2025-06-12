@@ -32,20 +32,64 @@ OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY", "YOUR_API_KEY_HERE")
 OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1/chat/completions"
 
 # Default model - can be overridden
-DEFAULT_MODEL = os.environ.get("OPENROUTER_MODEL", "google/gemini-2.0-flash")
+DEFAULT_MODEL = os.environ.get("OPENROUTER_MODEL", "google/gemini-pro")
 
 # Available models (you can extend this list based on OpenRouter's offerings)
 AVAILABLE_MODELS = [
+    # Google models
     "google/gemini-2.0-flash",
+    "google/gemini-2.0-flash-thinking-exp-1219",
     "google/gemini-pro",
+    "google/gemini-pro-1.5",
+    "google/gemini-flash-1.5",
+    "google/gemini-2.5-pro-preview",
+    
+    # Anthropic models
     "anthropic/claude-3-opus",
     "anthropic/claude-3-sonnet",
     "anthropic/claude-3-haiku",
+    "anthropic/claude-3.5-sonnet",
+    "anthropic/claude-3.5-haiku",
+    
+    # OpenAI models
     "openai/gpt-4-turbo",
     "openai/gpt-4",
+    "openai/gpt-4o",
+    "openai/gpt-4o-mini",
     "openai/gpt-3.5-turbo",
+    "openai/o1-preview",
+    "openai/o1-mini",
+    
+    # Meta models
     "meta-llama/llama-3-70b-instruct",
+    "meta-llama/llama-3-8b-instruct",
+    "meta-llama/llama-3.1-405b-instruct",
+    "meta-llama/llama-3.1-70b-instruct",
+    "meta-llama/llama-3.1-8b-instruct",
+    "meta-llama/llama-3.2-1b-instruct",
+    "meta-llama/llama-3.2-3b-instruct",
+    
+    # Mistral models
     "mistralai/mixtral-8x7b-instruct",
+    "mistralai/mixtral-8x22b-instruct",
+    "mistralai/mistral-7b-instruct",
+    "mistralai/mistral-large",
+    "mistralai/mistral-medium",
+    "mistralai/mistral-small",
+    
+    # Qwen models
+    "qwen/qwen-2.5-72b-instruct",
+    "qwen/qwen-2.5-32b-instruct",
+    "qwen/qwen-2.5-14b-instruct",
+    "qwen/qwen-2.5-7b-instruct",
+    
+    # Other models
+    "deepseek/deepseek-chat",
+    "deepseek/deepseek-coder",
+    "microsoft/wizardlm-2-8x22b",
+    "nousresearch/hermes-3-llama-3.1-405b",
+    "x-ai/grok-2",
+    "x-ai/grok-2-mini",
 ]
 
 # Check if API key is configured
